@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "gentw": "tailwind -i ./image/static/image/input.css -o ./image-static-image/stlye.css --watch"
+  },
+
+  "dependencies": {},
+  "devDependencies": {
+    "daisyui": "4.12.10",
+    "tailwindcss": "3.4.12"
+  }
+}
