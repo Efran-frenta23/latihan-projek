@@ -1,0 +1,66 @@
+{% extends "image/base.html" %}
+
+{% block title %}About - Image Gallery{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <!-- Hero -->
+    <div class="text-center py-12">
+        <h1 class="text-4xl font-bold mb-4">About Image Gallery</h1>
+        <p class="text-lg opacity-70">A simple, fast, and beautiful image sharing platform</p>
+    </div>
+    
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-2 gap-6 my-8">
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h3 class="card-title">⚡ Fast & Lightweight</h3>
+                <p>Built with Django and HTMX for minimal JavaScript and maximum performance.</p>
+            </div>
+        </div>
+        
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h3 class="card-title">🎨 Modern UI</h3>
+                <p>Beautiful design powered by Tailwind CSS and DaisyUI components.</p>
+            </div>
+        </div>
+        
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h3 class="card-title">📱 Responsive</h3>
+                <p>Works perfectly on all devices - desktop, tablet, and mobile.</p>
+            </div>
+        </div>
+        
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h3 class="card-title">🔒 Secure</h3>
+                <p>Built-in validation, CSRF protection, and secure file handling.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tech Stack -->
+    <div class="card bg-base-100 shadow-xl my-8">
+        <div class="card-body">
+            <h3 class="card-title">🛠️ Tech Stack</h3>
+            <div class="flex flex-wrap gap-2 mt-4">
+                <div class="badge badge-lg">Django 4.2</div>
+                <div class="badge badge-lg">Tailwind CSS</div>
+                <div class="badge badge-lg">DaisyUI</div>
+                <div class="badge badge-lg">HTMX</div>
+                <div class="badge badge-lg">Alpine.js</div>
+                <div class="badge badge-lg">Python</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to Gallery -->
+    <div class="text-center mt-8">
+        <a href="{% url 'home' %}" class="btn btn-primary">
+            ← Back to Gallery
+        </a>
+    </div>
+</div>
+{% endblock %}

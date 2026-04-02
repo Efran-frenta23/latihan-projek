@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "gentw": "tailwind -i ./image/static/image/input.css -o ./image-static-image/stlye.css --watch"
+    "gentw": "tailwind -i ./image/static/image/input.css -o ./image/static/image/style.css --watch",
+    "build:css": "tailwind -i ./image/static/image/input.css -o ./image/static/image/style.css --minify"
   },
-
   "dependencies": {},
   "devDependencies": {
     "daisyui": "4.12.10",

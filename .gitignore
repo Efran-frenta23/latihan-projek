@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+/media/
+/staticfiles/
+/static/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Tailwind
+*.css.map
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.db-journal
+
+# Backup files
+*.bak
+*~
+.backup/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Misc
+*.manifest
+*.spec

@@ -1,0 +1,113 @@
+{% extends "image/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Hero Section -->
+    <div class="text-center py-8 animate-fade-in">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Welcome to Image Gallery
+        </h1>
+        <p class="text-lg opacity-70 max-w-2xl mx-auto">
+            Upload, organize, and showcase your images in a beautiful and responsive gallery.
+            Fast, simple, and elegant.
+        </p>
+    </div>
+    
+    <!-- Mobile Search & Stats -->
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <!-- Mobile Search (visible only on small screens) -->
+        <div class="form-control w-full sm:hidden">
+            <form hx-get="{% url 'search' %}" hx-target="#gallery-grid" hx-push-url="true">
+                <div class="input-group flex">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search images..." 
+                        class="input input-bordered w-full rounded-r-none"
+                        value="{{ search_form.q.value|default:'' }}"
+                        autocomplete="off"
+                    />
+                    <button type="submit" class="btn btn-square rounded-l-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats shadow">
+            <div class="stat">
+                <div class="stat-title">Total Images</div>
+                <div class="stat-value text-primary">{{ page_obj.paginator.count }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Grid -->
+    <div id="gallery-grid" 
+         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+         hx-get="{% url 'search' %}"
+         hx-trigger="galleryUpdated from:body"
+         hx-swap="innerHTML">
+        {% include "image/partials/image_grid.html" %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex justify-center mt-8">
+        <div class="join">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="join-item btn">«</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn">‹</a>
+            {% else %}
+                <button class="join-item btn btn-disabled">«</button>
+                <button class="join-item btn btn-disabled">‹</button>
+            {% endif %}
+            
+            <button class="join-item btn">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </button>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="join-item btn">›</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="join-item btn">»</a>
+            {% else %}
+                <button class="join-item btn btn-disabled">›</button>
+                <button class="join-item btn btn-disabled">»</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Empty State -->
+    {% if not images %}
+    <div class="text-center py-16 animate-fade-in">
+        <div class="text-6xl mb-4">📷</div>
+        <h3 class="text-2xl font-bold mb-2">No images yet</h3>
+        <p class="opacity-70 mb-6">Upload your first image to get started!</p>
+        <button class="btn btn-primary" onclick="upload_modal.showModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Upload Image
+        </button>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Auto-hide alerts after 5 seconds
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 5000);
+</script>
+{% endblock %}

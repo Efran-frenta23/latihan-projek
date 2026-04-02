@@ -1,0 +1,107 @@
+<nav class="navbar bg-base-100 shadow-lg sticky top-0 z-50 backdrop-blur-sm bg-base-100/95">
+    <div class="container mx-auto px-4">
+        <div class="flex-1">
+            <a href="{% url 'home' %}" class="btn btn-ghost text-xl gap-2">
+                <span class="text-2xl">🖼️</span>
+                <span class="hidden sm:inline">Image Gallery</span>
+            </a>
+        </div>
+        
+        <div class="flex-none gap-2">
+            <!-- Search Bar -->
+            <div class="form-control hidden md:block">
+                <form hx-get="{% url 'search' %}" hx-target="#gallery-grid" hx-push-url="true">
+                    <div class="input-group flex">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            placeholder="Search images..." 
+                            class="input input-bordered w-48 lg:w-64 rounded-r-none"
+                            value="{{ search_form.q.value|default:'' }}"
+                            autocomplete="off"
+                        />
+                        <button type="submit" class="btn btn-square rounded-l-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Mobile Search Button -->
+            <button class="btn btn-square md:hidden" onclick="mobile_search.showModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
+            
+            <!-- Upload Button -->
+            <button class="btn btn-primary gap-2" onclick="upload_modal.showModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                <span class="hidden sm:inline">Upload</span>
+            </button>
+            
+            <!-- Menu Dropdown -->
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li>
+                        <a href="{% url 'home' %}" class="justify-between">
+                            Home
+                            <span class="badge badge-sm">New</span>
+                        </a>
+                    </li>
+                    <li><a href="{% url 'about' %}">About</a></li>
+                    <li><a href="/admin/" target="_blank">Admin Panel</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Search Modal -->
+<dialog id="mobile_search" class="modal">
+    <div class="modal-box">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <h3 class="font-bold text-lg mb-4">Search Images</h3>
+        <form hx-get="{% url 'search' %}" hx-target="#gallery-grid" hx-push-url="true">
+            <input 
+                type="text" 
+                name="q" 
+                placeholder="Search..." 
+                class="input input-bordered w-full"
+                value="{{ search_form.q.value|default:'' }}"
+                autocomplete="off"
+            />
+            <button type="submit" class="btn btn-primary w-full mt-4">Search</button>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- Upload Modal -->
+<dialog id="upload_modal" class="modal">
+    <div class="modal-box">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <h3 class="font-bold text-lg mb-4">Upload Image</h3>
+        <div id="upload-form-container">
+            {% include "image/partials/upload_form.html" %}
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>

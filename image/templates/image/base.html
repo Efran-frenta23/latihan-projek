@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="htmx-config" content='{"includeIndicatorStyles":false}'>
+    
+    <title>{% block title %}{{ page_title|default:"Image Gallery" }}{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖼️</text></svg>">
+    
+    <!-- Tailwind CSS -->
+    <link href="{% static 'image/style.css' %}" rel="stylesheet">
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/FTJ032npxILX8jq9rLXpqE4iLbC5x" crossorigin="anonymous"></script>
+    
+    <!-- Alpine.js for light interactions -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Custom styles -->
+    <style>
+        [hx-request], [hx-request] * {
+            pointer-events: none !important;
+        }
+        
+        .htmx-indicator {
+            display: none;
+        }
+        
+        .htmx-request .htmx-indicator {
+            display: flex;
+        }
+        
+        .htmx-request.htmx-indicator {
+            display: flex;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        
+        /* Image grid animations */
+        .image-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .image-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        /* Lightbox */
+        .lightbox {
+            backdrop-filter: blur(8px);
+        }
+        
+        /* Drag drop zone */
+        .drag-active {
+            border-color: #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-base-300">
+    <!-- Navbar -->
+    {% include "image/partials/navbar.html" %}
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    {% include "image/partials/footer.html" %}
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container" 
+         x-data="{ toasts: [] }"
+         @showToast.window="toasts.push({ id: Date.now(), message: $event.detail.message, type: $event.detail.type }); setTimeout(() => { toasts = toasts.filter(t => t.id !== $event.detail.id) }, 3000)">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div class="alert shadow-lg animate-slide-up"
+                 :class="{
+                     'alert-success': toast.type === 'success',
+                     'alert-error': toast.type === 'error',
+                     'alert-info': toast.type === 'info',
+                     'alert-warning': toast.type === 'warning'
+                 }">
+                <span x-text="toast.message" class="text-sm"></span>
+            </div>
+        </template>
+    </div>
+    
+    <!-- Lightbox Modal -->
+    <dialog id="lightbox_modal" class="modal">
+        <div class="modal-box bg-base-300/95 backdrop-blur-sm max-w-5xl p-2">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10">✕</button>
+            </form>
+            <div id="lightbox-content"></div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+    
+    <!-- Scripts -->
+    <script>
+        // Global htmx events
+        document.body.addEventListener('htmx:afterSwap', function(event) {
+            if (event.detail.target.id === 'gallery-grid') {
+                document.dispatchEvent(new CustomEvent('galleryUpdated'));
+            }
+        });
+        
+        // Open lightbox
+        function openLightbox(imageUrl, caption, pk) {
+            const content = document.getElementById('lightbox-content');
+            content.innerHTML = `
+                <div class="relative group">
+                    <img src="${imageUrl}" alt="${caption}" class="w-full h-auto rounded-lg">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent rounded-b-lg">
+                        <p class="text-white text-lg font-medium">${caption || 'No caption'}</p>
+                        <div class="flex gap-2 mt-2">
+                            <a href="${imageUrl}" download class="btn btn-sm btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download
+                            </a>
+                            <button onclick="deleteFromLightbox(${pk})" class="btn btn-sm btn-error">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('lightbox_modal').showModal();
+        }
+        
+        function deleteFromLightbox(pk) {
+            if (confirm('Are you sure you want to delete this image?')) {
+                fetch(`/image/${pk}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                }).then(() => {
+                    document.getElementById('lightbox_modal').close();
+                    location.reload();
+                });
+            }
+        }
+        
+        function getCsrfToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                   document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+        }
+        
+        // Gallery update handler
+        document.addEventListener('galleryUpdated', function() {
+            // Reinitialize any JS needed after gallery update
+        });
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

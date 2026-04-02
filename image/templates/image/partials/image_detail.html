@@ -1,0 +1,45 @@
+<!-- Image Detail Partial (for lightbox) -->
+<div class="relative">
+    <img src="{{ image.image.url }}" 
+         alt="{{ image.caption }}" 
+         class="w-full h-auto rounded-lg" />
+    
+    <div class="mt-4 space-y-2">
+        <h3 class="text-xl font-bold">{{ image.caption|default:"No caption" }}</h3>
+        <div class="flex flex-wrap gap-4 text-sm opacity-70">
+            <div class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+                <span>{{ image.width }} x {{ image.height }} px</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <span>{{ image.file_size_mb }} MB</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>{{ image.uploaded_at|date:"F d, Y \a\t H:i" }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flex gap-2 mt-6">
+        <a href="{{ image.image.url }}" download class="btn btn-primary flex-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download
+        </a>
+        <button onclick="deleteFromLightbox({{ image.pk }})" class="btn btn-error flex-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete
+        </button>
+    </div>
+</div>
